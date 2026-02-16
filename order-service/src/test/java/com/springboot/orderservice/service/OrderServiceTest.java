@@ -1,13 +1,17 @@
 package com.springboot.orderservice.service;
 
+import com.springboot.orderservice.dto.EventStatusEnum;
 import com.springboot.orderservice.dto.OrderRequest;
 import com.springboot.orderservice.dto.OrderResponse;
 import com.springboot.orderservice.dto.OrderStatusEnum;
+import com.springboot.orderservice.dto.event.OrderCreated;
 import com.springboot.orderservice.exception.OrderNotFoundException;
 import com.springboot.orderservice.mapper.OrderMapper;
 import com.springboot.orderservice.model.Order;
-import com.springboot.orderservice.producer.OrderEventPublisher;
+//import com.springboot.orderservice.producer.OrderEventPublisher;
+import com.springboot.orderservice.model.OutboxEvent;
 import com.springboot.orderservice.repository.OrderRepository;
+import com.springboot.orderservice.repository.OutboxRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,7 +34,7 @@ class OrderServiceTest {
     private OrderRepository orderRepository;
 
     @Mock
-    private OrderEventPublisher eventPublisher;
+    private OutboxRepository outboxRepository;
 
     @Mock
     private OrderMapper orderMapper;
@@ -40,6 +45,8 @@ class OrderServiceTest {
     private Order order;
     private OrderRequest requestDto;
     private OrderResponse responseDto;
+    private OrderCreated orderCreatedEvent;
+    private OutboxEvent outboxEvent;
 
     @BeforeEach
     void setUp() {
@@ -62,13 +69,32 @@ class OrderServiceTest {
                 OrderStatusEnum.CREATED,
                 order.getCreatedAt()
         );
+
+        orderCreatedEvent = new OrderCreated(
+                "event-123",
+                Instant.now(),
+                1L,
+                "test@mail.com",
+                "P100",
+                2
+        );
+
+        outboxEvent = OutboxEvent.builder()
+                .eventId("event-123")
+                .eventType("ORDER")
+                .payload("{}")
+                .status(EventStatusEnum.PENDING)
+                .build();
     }
 
     @Test
-    void createOrder_shouldPersistAndPublishEvent() {
+    void createOrder_shouldPersist() {
         when(orderMapper.toEntity(requestDto)).thenReturn(order);
         when(orderRepository.save(any())).thenReturn(order);
         when(orderMapper.toResponse(order)).thenReturn(responseDto);
+
+        when(orderMapper.toEvent(order)).thenReturn(orderCreatedEvent);
+        when(outboxRepository.save(any())).thenReturn(outboxEvent);
 
         OrderResponse result = orderService.createOrder(requestDto);
 
@@ -76,18 +102,7 @@ class OrderServiceTest {
         assertEquals(1L, result.id());
 
         verify(orderRepository).save(any());
-        verify(eventPublisher).publishOrderCreatedEvent(order);
-    }
-
-    @Test
-    void createOrder_whenPublishFails_shouldThrowException() {
-        when(orderMapper.toEntity(requestDto)).thenReturn(order);
-        when(orderRepository.save(any())).thenReturn(order);
-        doThrow(new RuntimeException("Broker down"))
-                .when(eventPublisher).publishOrderCreatedEvent(order);
-
-        assertThrows(RuntimeException.class,
-                () -> orderService.createOrder(requestDto));
+        verify(outboxRepository).save(any());
     }
 
     @Test

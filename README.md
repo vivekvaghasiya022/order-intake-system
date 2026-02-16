@@ -136,17 +136,31 @@ OrderCreated
 
 
 ## Error Handling Strategy
-### 1️⃣ Order Creation Failure
+### 1️⃣ Order Creation Flow
 **If:**
 - Validation fails → `400 Bad Request`
 - Order not found → `404 Not Found`
-- Kafka publish fails → request fails with `500` and transaction rolls back
+- Database error → `500 Internal Server Error`
+- Kafka is temporarily unavailable → **Order still succeeds**
 
-**Strategy Used**
-- Order is persisted first
-- Event publishing occurs inside service
-- If publish fails → exception thrown → transaction rollback
-(Alternative production strategy: Outbox Pattern)
+### ✅ Strategy Used: Transactional Outbox Pattern
+
+Instead of publishing directly to Kafka inside the service transaction, this system implements the **Transactional Outbox Pattern**.
+
+### How It Works
+#### 1. Within a single database transaction:  
+   - Order is persisted 
+   - An Outbox Event record is stored in `outbox_events` table
+#### 2. If anything fails during this step:
+   - Entire transaction rolls back
+   - No order is created
+   - No event is stored
+#### 3. A background publisher component:
+   - Polls `outbox_events`
+   - Publishes events to Kafka
+   - Marks event as `PROCESSED`
+   - If publishing fails
+
 
 ### 2️⃣ Consumer Error Handling
 Inside `notification-service`:
@@ -303,36 +317,39 @@ order-intake-system
 │   └── src
 │       ├── main
 │       │   ├── java
-│       │   │   └── com/springboot/orderservice/v1
+│       │   │   └── com/springboot/orderservice
 │       │   │       ├── OrderServiceApplication.java
 │       │   │       ├── config
-│       │   │       │   └── KafkaProducerConfig.java
+│       │   │       │   ├── AppConfig.java
+│       │   │       │   └── KafkaTopicConfig.java
 │       │   │       ├── controller
 │       │   │       │   └── OrderController.java
 │       │   │       ├── service
-│       │   │       │   ├── OrderService.java
-│       │   │       │   └── impl/OrderServiceImpl.java
+│       │   │       │   └── OrderService.java
 │       │   │       ├── repository
+│       │   │       │   ├── OutboxEventRepository.java
 │       │   │       │   └── OrderRepository.java
 │       │   │       ├── model
 │       │   │       │   ├── Order.java
-│       │   │       │   └── OrderStatus.java
+│       │   │       │   └── OutboxEvent.java
 │       │   │       ├── dto
-│       │   │       │   ├── CreateOrderRequest.java
-│       │   │       │   └── OrderResponse.java
-│       │   │       ├── event
-│       │   │       │   ├── OrderCreated.java
-│       │   │       │   └── OrderEventPublisher.java
+│       │   │       │   ├── event/OrderCreated.java
+│       │   │       │   ├── OrderRequest.java
+│       │   │       │   ├── OrderResponse.java
+│       │   │       │   ├── EventStatusEnum.java
+│       │   │       │   └── OrderStatusEnum.java
+│       │   │       ├── producer
+│       │   │       │   └── OutboxEventPublisher.java
 │       │   │       └── exception
 │       │   │           ├── GlobalExceptionHandler.java
-│       │   │           └── ResourceNotFoundException.java
+│       │   │           └── OrderNotFoundException.java
 │       │   │
 │       │   └── resources
 │       │       ├── db/migration/V1__init_order_schema.sql
 │       │       └── application.yml
 │       │
 │       └── test
-│           └── java/com/springboot/orderservice/v1
+│           └── java/com/springboot/orderservice
 │               ├── controller/OrderControllerTest.java
 │               ├── service/OrderServiceTest.java
 │               └── repository/OrderRepositoryTest.java
@@ -344,10 +361,8 @@ order-intake-system
 │   └── src
 │       ├── main
 │       │   ├── java
-│       │   │   └── com/springboot/notificationservice/v1
+│       │   │   └── com/springboot/notificationservice
 │       │   │       ├── NotificationServiceApplication.java
-│       │   │       ├── config
-│       │   │       │   └── KafkaConsumerConfig.java
 │       │   │       ├── controller
 │       │   │       │   └── NotificationController.java
 │       │   │       ├── service
@@ -357,8 +372,13 @@ order-intake-system
 │       │   │       │   └── NotificationRepository.java
 │       │   │       ├── model
 │       │   │       │   └── Notification.java
-│       │   │       ├── event
-│       │   │       │   └── OrderCreated.java
+│       │   │       ├── dto
+│       │   │       │   ├── event/OrderCreated.java
+│       │   │       │   └── NotificationResponse.java
+│       │   │       ├── mapper
+│       │   │       │   └── NotificationMapper.java
+│       │   │       ├── utility
+│       │   │       │   └── NotificationUtil.java
 │       │   │       ├── listener
 │       │   │       │   └── OrderCreatedListener.java
 │       │   │       └── exception
@@ -369,7 +389,7 @@ order-intake-system
 │       │       └── application.yml
 │       │
 │       └── test
-│           └── java/com/springboot/notificationservice/v1
+│           └── java/com/springboot/notificationservice
 │               ├── controller/NotificationControllerTest.java
 │               ├── service/NotificationServiceTest.java
 │               ├── repository/NotificationRepositoryTest.java

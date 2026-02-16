@@ -1,12 +1,17 @@
 package com.springboot.orderservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.orderservice.dto.EventStatusEnum;
 import com.springboot.orderservice.dto.OrderRequest;
 import com.springboot.orderservice.dto.OrderResponse;
+import com.springboot.orderservice.dto.event.OrderCreated;
 import com.springboot.orderservice.exception.OrderNotFoundException;
 import com.springboot.orderservice.mapper.OrderMapper;
 import com.springboot.orderservice.model.Order;
-import com.springboot.orderservice.producer.OrderEventPublisher;
+import com.springboot.orderservice.model.OutboxEvent;
 import com.springboot.orderservice.repository.OrderRepository;
+import com.springboot.orderservice.repository.OutboxRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,27 +24,43 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final OrderEventPublisher orderEventPublisher;
+    private final OutboxRepository outboxRepository;
     private final OrderMapper orderMapper;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public OrderResponse createOrder(OrderRequest request) {
         log.info("Creating order for: {}", request.getProductCode());
 
-        // mapping request dto to order entity
+        // Mapping request dto to order entity
         Order order = orderMapper.toEntity(request);
 
-        Order saved = orderRepository.save(order);
+        // Save Order
+        Order savedOrder = orderRepository.save(order);
 
         try {
-            orderEventPublisher.publishOrderCreatedEvent(saved);
-        } catch (Exception e) {
-            log.error("Error while publishing event:", e);
-            throw new RuntimeException("Failed to publish OrderCreated event");
+            // Mapping order entity to OrderCreated event
+            OrderCreated event = orderMapper.toEvent(savedOrder);
+
+            String jsonPayload = objectMapper.writeValueAsString(event);
+
+            // Save Outbox Event (Same Transaction)
+            OutboxEvent outboxEvent = OutboxEvent.builder()
+                    .eventId(event.eventId())
+                    .eventType("ORDER")
+                    .payload(jsonPayload)
+                    .status(EventStatusEnum.PENDING)
+                    .build();
+
+            outboxRepository.save(outboxEvent);
+            log.info("Outbox event stored successfully for order id: {} , eventId: {}", savedOrder.getId(), event.eventId());
+        } catch (JsonProcessingException e) {
+            log.error("JSON mapping failed for order: {}", savedOrder.getId(), e);
+            throw new RuntimeException("Could not serialize order event", e);
         }
 
-        log.info("Order created successfully with id: {}", saved.getId());
-        return orderMapper.toResponse(saved);
+        log.info("Order created successfully with id: {}", savedOrder.getId());
+        return orderMapper.toResponse(savedOrder);
     }
 
     @Transactional(readOnly = true)

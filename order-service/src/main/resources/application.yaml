@@ -52,3 +52,4 @@ app:
       order-created: order-created-topic
       partitions: 3
       replicas: 3
+    max-retry-attempts: 5

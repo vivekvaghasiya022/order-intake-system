@@ -73,11 +73,13 @@ curl -X POST http://localhost:8081/api/v1/orders \
 
 ```json
 {
-  "timestamp": "2026-02-14T17:23:21.265785628",
-  "status": 400,
+  "path": "/api/v1/orders",
   "error": "Validation Failed",
-  "message": "Quantity should be positive",
-  "path": "/api/v1/orders"
+  "errors": {
+    "quantity": "Quantity should be positive"
+  },
+  "status": 400,
+  "timestamp": "2026-02-16T05:54:17.729761914Z"
 }
 ```
 
@@ -101,11 +103,13 @@ curl -X POST http://localhost:8081/api/v1/orders \
 
 ```json
 {
-  "timestamp": "2026-02-14T17:27:31.119525372",
-  "status": 400,
+  "path": "/api/v1/orders",
   "error": "Validation Failed",
-  "message": "must be a well-formed email address",
-  "path": "/api/v1/orders"
+  "errors": {
+    "customerEmail": "Invalid email format"
+  },
+  "status": 400,
+  "timestamp": "2026-02-16T05:53:06.970712135Z"
 }
 ```
 
@@ -128,11 +132,13 @@ curl -X POST http://localhost:8081/api/v1/orders \
 
 ```json
 {
-  "timestamp": "2026-02-14T17:32:01.231932187",
-  "status": 400,
+  "path": "/api/v1/orders",
   "error": "Validation Failed",
-  "message": "Product code is required",
-  "path": "/api/v1/orders"
+  "errors": {
+    "productCode": "Product code is required"
+  },
+  "status": 400,
+  "timestamp": "2026-02-16T05:53:35.358567593Z"
 }
 ```
 

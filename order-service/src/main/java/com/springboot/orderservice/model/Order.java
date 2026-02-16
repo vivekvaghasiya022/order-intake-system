@@ -30,6 +30,7 @@ public class Order {
     private Integer quantity;
 
     @Builder.Default
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private OrderStatusEnum status = OrderStatusEnum.CREATED;
 
