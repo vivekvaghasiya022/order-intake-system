@@ -1,0 +1,60 @@
+2026-02-15T13:09:35.876+05:30  INFO 24280 --- [main] c.s.n.v.c.NotificationControllerTest     : Starting NotificationControllerTest using Java 23.0.1 with PID 24280 (started by vivek in C:\Users\vivek\OneDrive\Documents\Spring_Projects\order-intake-system\notification-service)
+2026-02-15T13:09:35.896+05:30  INFO 24280 --- [main] c.s.n.v.c.NotificationControllerTest     : No active profile set, falling back to 1 default profile: "default"
+2026-02-15T13:09:40.891+05:30  INFO 24280 --- [main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-02-15T13:09:40.891+05:30  INFO 24280 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-02-15T13:09:40.894+05:30  INFO 24280 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 3 ms
+2026-02-15T13:09:40.940+05:30  INFO 24280 --- [main] c.s.n.v.c.NotificationControllerTest     : Started NotificationControllerTest in 5.874 seconds (process running for 8.306)
+2026-02-15T13:09:41.278+05:30  INFO 24280 --- [main] c.s.n.v.c.NotificationController         : GET /api/notifications/1 - Fetching notification with id
+2026-02-15T13:09:41.617+05:30  INFO 24280 --- [main] c.s.n.v.c.NotificationController         : GET /api/notifications - Fetching all notifications
+2026-02-15T13:09:41.660+05:30  INFO 24280 --- [main] c.s.n.v.c.NotificationController         : GET /api/notifications/1 - Fetching notification with id
+2026-02-15T13:09:41.841+05:30  INFO 24280 --- [main] c.s.n.v.l.OrderCreatedEventListener      : Received OrderCreated event: a6fe9979-d192-45fe-a551-1350d7b02bdb
+2026-02-15T13:09:42.179+05:30  INFO 24280 --- [main] c.s.n.v1.service.NotificationService     : Sending SMS notification for eventId: 3fa7fc18-7785-4613-8817-d2d6f21aadbe
+2026-02-15T13:09:42.181+05:30  INFO 24280 --- [main] c.s.n.v1.service.NotificationService     : Sending EMAIL notification for eventId: 3fa7fc18-7785-4613-8817-d2d6f21aadbe
+2026-02-15T13:09:42.183+05:30  INFO 24280 --- [main] c.s.n.v1.service.NotificationService     : Sending FCM notification for eventId: 3fa7fc18-7785-4613-8817-d2d6f21aadbe
+2026-02-15T13:09:42.197+05:30  INFO 24280 --- [main] c.s.n.v1.service.NotificationService     : Sending SMS notification for eventId: event-123
+2026-02-15T13:09:42.208+05:30  WARN 24280 --- [main] c.s.n.v1.service.NotificationService     : Event already processed for eventId: event-123
+2026-02-15T13:09:42.209+05:30  INFO 24280 --- [main] c.s.n.v1.service.NotificationService     : Sending SMS notification for eventId: event-123
+2026-02-15T13:09:42.209+05:30  INFO 24280 --- [main] c.s.n.v1.service.NotificationService     : Sending EMAIL notification for eventId: event-123
+2026-02-15T13:09:42.209+05:30  INFO 24280 --- [main] c.s.n.v1.service.NotificationService     : Sending FCM notification for eventId: event-123
+2026-02-15T13:09:42.222+05:30  WARN 24280 --- [main] c.s.n.v1.service.NotificationService     : Event already processed for eventId: event-123
+2026-02-15T13:09:42.237+05:30  INFO 24280 --- [main] GlobalEmbeddedKafkaTestExecutionListener : Stopped global Embedded Kafka.
+2026-02-15T13:12:01.895+05:30  INFO 3284 --- [main] c.s.n.v.c.NotificationControllerTest     : Starting NotificationControllerTest using Java 23.0.1 with PID 3284 (started by vivek in C:\Users\vivek\OneDrive\Documents\Spring_Projects\order-intake-system\notification-service)
+2026-02-15T13:12:01.899+05:30  INFO 3284 --- [main] c.s.n.v.c.NotificationControllerTest     : No active profile set, falling back to 1 default profile: "default"
+2026-02-15T13:12:06.196+05:30  INFO 3284 --- [main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-02-15T13:12:06.197+05:30  INFO 3284 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-02-15T13:12:06.203+05:30  INFO 3284 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 5 ms
+2026-02-15T13:12:06.260+05:30  INFO 3284 --- [main] c.s.n.v.c.NotificationControllerTest     : Started NotificationControllerTest in 5.234 seconds (process running for 7.389)
+2026-02-15T13:12:06.560+05:30  INFO 3284 --- [main] c.s.n.v.c.NotificationController         : GET /api/notifications/1 - Fetching notification with id
+2026-02-15T13:12:06.826+05:30  INFO 3284 --- [main] c.s.n.v.c.NotificationController         : GET /api/notifications - Fetching all notifications
+2026-02-15T13:12:06.888+05:30  INFO 3284 --- [main] c.s.n.v.c.NotificationController         : GET /api/notifications/1 - Fetching notification with id
+2026-02-15T13:12:07.101+05:30  INFO 3284 --- [main] c.s.n.v.l.OrderCreatedEventListener      : Received OrderCreated event: 1fe95ead-15ad-400d-8e84-dacf683b5725
+2026-02-15T13:12:07.455+05:30  INFO 3284 --- [main] c.s.n.v1.service.NotificationService     : Sending SMS notification for eventId: 8fc6a8b1-afac-4d2f-87de-3bd104ddcf88
+2026-02-15T13:12:07.458+05:30  INFO 3284 --- [main] c.s.n.v1.service.NotificationService     : Sending EMAIL notification for eventId: 8fc6a8b1-afac-4d2f-87de-3bd104ddcf88
+2026-02-15T13:12:07.459+05:30  INFO 3284 --- [main] c.s.n.v1.service.NotificationService     : Sending FCM notification for eventId: 8fc6a8b1-afac-4d2f-87de-3bd104ddcf88
+2026-02-15T13:12:07.480+05:30  INFO 3284 --- [main] c.s.n.v1.service.NotificationService     : Sending SMS notification for eventId: event-123
+2026-02-15T13:12:07.488+05:30  WARN 3284 --- [main] c.s.n.v1.service.NotificationService     : Event already processed for eventId: event-123
+2026-02-15T13:12:07.489+05:30  INFO 3284 --- [main] c.s.n.v1.service.NotificationService     : Sending SMS notification for eventId: event-123
+2026-02-15T13:12:07.490+05:30  INFO 3284 --- [main] c.s.n.v1.service.NotificationService     : Sending EMAIL notification for eventId: event-123
+2026-02-15T13:12:07.492+05:30  INFO 3284 --- [main] c.s.n.v1.service.NotificationService     : Sending FCM notification for eventId: event-123
+2026-02-15T13:12:07.518+05:30  WARN 3284 --- [main] c.s.n.v1.service.NotificationService     : Event already processed for eventId: event-123
+2026-02-15T13:12:07.553+05:30  INFO 3284 --- [main] GlobalEmbeddedKafkaTestExecutionListener : Stopped global Embedded Kafka.
+2026-02-15T23:46:00.505+05:30  INFO 10188 --- [main] c.s.n.c.NotificationControllerTest       : Starting NotificationControllerTest using Java 23.0.1 with PID 10188 (started by vivek in C:\Users\vivek\OneDrive\Documents\Spring_Projects\order-intake-system\notification-service)
+2026-02-15T23:46:00.508+05:30  INFO 10188 --- [main] c.s.n.c.NotificationControllerTest       : No active profile set, falling back to 1 default profile: "default"
+2026-02-15T23:46:03.154+05:30  INFO 10188 --- [main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-02-15T23:46:03.155+05:30  INFO 10188 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-02-15T23:46:03.158+05:30  INFO 10188 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 3 ms
+2026-02-15T23:46:03.198+05:30  INFO 10188 --- [main] c.s.n.c.NotificationControllerTest       : Started NotificationControllerTest in 3.36 seconds (process running for 5.241)
+2026-02-15T23:46:03.365+05:30  INFO 10188 --- [main] c.s.n.controller.NotificationController  : GET /api/notifications/1 - Fetching notification with id
+2026-02-15T23:46:03.624+05:30  INFO 10188 --- [main] c.s.n.controller.NotificationController  : GET /api/notifications - Fetching all notifications
+2026-02-15T23:46:03.659+05:30  INFO 10188 --- [main] c.s.n.controller.NotificationController  : GET /api/notifications/1 - Fetching notification with id
+2026-02-15T23:46:03.802+05:30  INFO 10188 --- [main] c.s.n.l.OrderCreatedEventListener        : Received OrderCreated event: 5ade2b1f-7176-4674-9eb5-951c344d944d
+2026-02-15T23:46:04.076+05:30  INFO 10188 --- [main] c.s.n.service.NotificationService        : Sending SMS notification for eventId: 96047cf6-af72-4bcf-8f96-ae1537d4e357
+2026-02-15T23:46:04.079+05:30  INFO 10188 --- [main] c.s.n.service.NotificationService        : Sending EMAIL notification for eventId: 96047cf6-af72-4bcf-8f96-ae1537d4e357
+2026-02-15T23:46:04.079+05:30  INFO 10188 --- [main] c.s.n.service.NotificationService        : Sending FCM notification for eventId: 96047cf6-af72-4bcf-8f96-ae1537d4e357
+2026-02-15T23:46:04.096+05:30  INFO 10188 --- [main] c.s.n.service.NotificationService        : Sending SMS notification for eventId: event-123
+2026-02-15T23:46:04.104+05:30  WARN 10188 --- [main] c.s.n.service.NotificationService        : Event already processed for eventId: event-123
+2026-02-15T23:46:04.105+05:30  INFO 10188 --- [main] c.s.n.service.NotificationService        : Sending SMS notification for eventId: event-123
+2026-02-15T23:46:04.105+05:30  INFO 10188 --- [main] c.s.n.service.NotificationService        : Sending EMAIL notification for eventId: event-123
+2026-02-15T23:46:04.106+05:30  INFO 10188 --- [main] c.s.n.service.NotificationService        : Sending FCM notification for eventId: event-123
+2026-02-15T23:46:04.113+05:30  WARN 10188 --- [main] c.s.n.service.NotificationService        : Event already processed for eventId: event-123
+2026-02-15T23:46:04.125+05:30  INFO 10188 --- [main] GlobalEmbeddedKafkaTestExecutionListener : Stopped global Embedded Kafka.

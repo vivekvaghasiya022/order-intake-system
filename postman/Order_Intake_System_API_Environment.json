@@ -1,0 +1,31 @@
+{
+  "id": "order-intake-system-env",
+  "name": "Order Intake System Env",
+  "values": [
+    {
+      "key": "base_url_orders",
+      "value": "http://localhost:8081",
+      "type": "text",
+      "enabled": true
+    },
+    {
+      "key": "base_url_notifications",
+      "value": "http://localhost:8082",
+      "type": "text",
+      "enabled": true
+    },
+    {
+      "key": "orderId",
+      "value": "",
+      "type": "text",
+      "enabled": true
+    },
+    {
+      "key": "notificationId",
+      "value": "",
+      "type": "text",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

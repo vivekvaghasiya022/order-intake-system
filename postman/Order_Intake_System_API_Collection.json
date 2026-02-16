@@ -1,0 +1,685 @@
+{
+  "info": {
+    "name": "Order Intake System API",
+    "_postman_id": "order-intake-system-api-collection",
+    "description": "Complete test suite for Order & Notification Services",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+      "item": [
+        {
+          "name": "Positive Scenarios",
+          "item": [
+            {
+              "name": "Create Order - Valid",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customerEmail\": \"test@example.com\",\n  \"productCode\": \"P1001\",\n  \"quantity\": 5\n}"
+                },
+                "url": {
+                  "raw": "{{orderServiceUrl}}/api/v1/orders",
+                  "host": ["{{orderServiceUrl}}"],
+                  "path": ["api", "v1","orders"]
+                }
+              },
+              "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Status code is 201\", function () {",
+                    "    pm.response.to.have.status(201);",
+                    "});",
+                    "",
+                    "pm.test(\"Response has id\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData).to.have.property('id');",
+                    "    pm.environment.set(\"orderId\", jsonData.id);",
+                    "    pm.environment.set(\"notificationId\", jsonData.id);",
+                    "});",
+                    "",
+                    "pm.test(\"Response has correct customer email\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.customerEmail).to.eql(\"test@example.com\");",
+                    "});",
+                    "",
+                    "pm.test(\"Response has correct product code\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.productCode).to.eql(\"P1001\");",
+                    "});",
+                    "",
+                    "pm.test(\"Response has quantity\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.quantity).to.eql(5);",
+                    "});",
+                    "",
+                    "pm.test(\"Response has status\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.status).to.eql(\"CREATED\");",
+                    "});",
+                    "",
+                    "pm.test(\"Response has timestamps\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData).to.have.property('createdAt');",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ]
+            },
+            {
+              "name": "Get All Orders",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is an array\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.be.an('array');",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is less than 1000ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{orderServiceUrl}}/api/v1/orders",
+                  "host": ["{{orderServiceUrl}}"],
+                  "path": ["api", "v1","orders"]
+                }
+              }
+            },
+            {
+              "name": "Get Order By ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response has correct structure\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.have.property('id');",
+                      "    pm.expect(jsonData).to.have.property('customerEmail');",
+                      "    pm.expect(jsonData).to.have.property('productCode');",
+                      "    pm.expect(jsonData).to.have.property('quantity');",
+                      "    pm.expect(jsonData).to.have.property('status');",
+                      "    pm.expect(jsonData).to.have.property('createdAt');",
+                      "});",
+                      "",
+                      "pm.test(\"ID matches requested ID\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "var expectedId = parseInt(pm.environment.get(\"orderId\"));",
+                      "    pm.expect(jsonData.id).to.eql(expectedId);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{orderServiceUrl}}/api/v1/orders/{{orderId}}",
+                  "host": ["{{orderServiceUrl}}"],
+                  "path": ["api", "v1","orders", "{{orderId}}"]
+                }
+              }
+            },
+            {
+              "name": "Get All Notifications",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is an array\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.be.an('array');",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is less than 1000ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{notificationServiceUrl}}/api/v1/notifications",
+                  "host": ["{{notificationServiceUrl}}"],
+                  "path": ["api", "v1","notifications"]
+                }
+              }
+            },
+            {
+              "name": "Get Notification By ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response has correct structure\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.have.property('id');",
+                      "    pm.expect(jsonData).to.have.property('orderId');",
+                      "    pm.expect(jsonData).to.have.property('type');",
+                      "    pm.expect(jsonData).to.have.property('delivered');",
+                      "    pm.expect(jsonData).to.have.property('message');",
+                      "    pm.expect(jsonData).to.have.property('createdAt');",
+                      "    pm.expect(jsonData).to.have.property('eventId');",
+                      "});",
+                      "",
+                      "pm.test(\"ID matches requested ID\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "var expectedId = parseInt(pm.environment.get(\"notificationId\"));",
+                      "    pm.expect(jsonData.id).to.eql(expectedId);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{notificationServiceUrl}}/api/v1/notifications/{{notificationId}}",
+                  "host": ["{{notificationServiceUrl}}"],
+                  "path": ["api", "v1","notifications", "{{notificationId}}"]
+                }
+              }
+            },
+            {
+              "name": "Get Notifications By Order ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is an array\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.be.an('array');",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is less than 1000ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{notificationServiceUrl}}/api/v1/notifications?orderId={{orderId}}",
+                  "host": ["{{notificationServiceUrl}}"],
+                  "path": ["api", "v1","notifications"],
+                  "query": [{ "key": "orderId", "value": "{{orderId}}" }]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Validation Errors",
+          "item": [
+
+            {
+              "name": "Invalid Email",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "",
+                      "pm.test(\"Error response structure is correct\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.have.property('timestamp');",
+                      "    pm.expect(jsonData).to.have.property('status');",
+                      "    pm.expect(jsonData).to.have.property('error');",
+                      "    pm.expect(jsonData).to.have.property('message');",
+                      "    pm.expect(jsonData).to.have.property('path');",
+                      "});",
+                      "",
+                      "pm.test(\"Error message mentions invalid phone number\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message.toLowerCase()).to.include('invalid');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"customerEmail\": \"invalid\", \"productCode\": \"P1\", \"quantity\": 5 }"
+                },
+                "url": {
+                  "raw": "{{orderServiceUrl}}/api/v1/orders",
+                  "host": ["{{orderServiceUrl}}"],
+                  "path": ["api", "v1","orders"]
+                }
+              }
+            },
+
+            {
+              "name": "Quantity Zero",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "",
+                      "pm.test(\"Error response structure is correct\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.have.property('timestamp');",
+                      "    pm.expect(jsonData).to.have.property('status');",
+                      "    pm.expect(jsonData).to.have.property('error');",
+                      "    pm.expect(jsonData).to.have.property('message');",
+                      "    pm.expect(jsonData).to.have.property('path');",
+                      "});",
+                      "",
+                      "pm.test(\"Error message mentions invalid phone number\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message.toLowerCase()).to.include('positive');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"customerEmail\": \"test@example.com\", \"productCode\": \"P1\", \"quantity\": 0 }"
+                },
+                "url": {
+                  "raw": "{{orderServiceUrl}}/api/v1/orders",
+                  "host": ["{{orderServiceUrl}}"],
+                  "path": ["api", "v1","orders"]
+                }
+              }
+            },
+
+            {
+              "name": "Malformed JSON",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"customerEmail\": \"test@example.com\" "
+                },
+                "url": {
+                  "raw": "{{orderServiceUrl}}/api/v1/orders",
+                  "host": ["{{orderServiceUrl}}"],
+                  "path": ["api", "v1","orders"]
+                }
+              }
+            }
+
+          ]
+        },
+        {
+          "name": "Not Found Scenarios",
+          "item": [
+
+            {
+              "name": "Order ID 999",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 404\", function () {",
+                      "    pm.response.to.have.status(404);",
+                      "});",
+                      "",
+                      "pm.test(\"Error response has correct structure\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.have.property('timestamp');",
+                      "    pm.expect(jsonData).to.have.property('status');",
+                      "    pm.expect(jsonData).to.have.property('error');",
+                      "    pm.expect(jsonData).to.have.property('message');",
+                      "    pm.expect(jsonData).to.have.property('path');",
+                      "});",
+                      "",
+                      "pm.test(\"Status in error is 404\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.status).to.eql(404);",
+                      "});",
+                      "",
+                      "pm.test(\"Error type is Not Found\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.error).to.eql('Not Found');",
+                      "});",
+                      "",
+                      "pm.test(\"Error message mentions ID 999\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.include('999');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{orderServiceUrl}}/api/v1/orders/999",
+                  "host": ["{{orderServiceUrl}}"],
+                  "path": ["api", "v1","orders", "999"]
+                }
+              }
+            },
+
+            {
+              "name": "Notification ID 999",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 404\", function () {",
+                      "    pm.response.to.have.status(404);",
+                      "});",
+                      "",
+                      "pm.test(\"Error response has correct structure\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.have.property('timestamp');",
+                      "    pm.expect(jsonData).to.have.property('status');",
+                      "    pm.expect(jsonData).to.have.property('error');",
+                      "    pm.expect(jsonData).to.have.property('message');",
+                      "    pm.expect(jsonData).to.have.property('path');",
+                      "});",
+                      "",
+                      "pm.test(\"Status in error is 404\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.status).to.eql(404);",
+                      "});",
+                      "",
+                      "pm.test(\"Error type is Not Found\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.error).to.eql('Not Found');",
+                      "});",
+                      "",
+                      "pm.test(\"Error message mentions ID 999\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.include('999');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{notificationServiceUrl}}/api/v1/notifications/999",
+                  "host": ["{{notificationServiceUrl}}"],
+                  "path": ["api", "v1","notifications", "999"]
+                }
+              }
+            }
+
+          ]
+        },
+
+        {
+          "name": "Edge Cases",
+          "item": [
+
+            {
+              "name": "Very Long Product Code",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201 or 400\", function () {",
+                      "    pm.expect(pm.response.code).to.be.oneOf([201, 400]);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"customerEmail\": \"test@example.com\", \"productCode\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\", \"quantity\": 5 }"
+                },
+                "url": {
+                  "raw": "{{orderServiceUrl}}/api/v1/orders",
+                  "host": ["{{orderServiceUrl}}"],
+                  "path": ["api", "v1","orders"]
+                }
+              }
+            },
+            {
+              "name": "Special Characters in Product code",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "pm.test(\"Product code with special characters is preserved\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.productCode).to.include('P001$\\'');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"customerEmail\": \"test@example.com\", \"productCode\": \"P001$'\", \"quantity\": 5 }"
+                },
+                "url": {
+                  "raw": "{{orderServiceUrl}}/api/v1/orders",
+                  "host": ["{{orderServiceUrl}}"],
+                  "path": ["api", "v1","orders"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+
+        {
+          "name": "Performance Tests",
+          "item": [
+
+            {
+              "name": "Get All Orders < 500ms",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{orderServiceUrl}}/api/v1/orders",
+                  "host": ["{{orderServiceUrl}}"],
+                  "path": ["api", "v1","orders"]
+                }
+              },
+              "event": [{
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Response time < 500ms', function () {",
+                    "  pm.expect(pm.response.responseTime).to.be.below(500);",
+                    "});"
+                  ]
+                }
+              }]
+            },
+            {
+              "name": "Get order by ID response time (<300ms)",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{orderServiceUrl}}/api/v1/orders/{{orderId}}",
+                  "host": ["{{orderServiceUrl}}"],
+                  "path": ["api", "v1","orders", "{{orderId}}"]
+                }
+              },
+              "event": [{
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Response time < 300ms', function () {",
+                    "  pm.expect(pm.response.responseTime).to.be.below(300);",
+                    "});"
+                  ]
+                }
+              }]
+            },
+            {
+              "name": "Get All Notifications < 500ms",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{notificationServiceUrl}}/api/v1/notifications",
+                  "host": ["{{notificationServiceUrl}}"],
+                  "path": ["api", "v1","notifications"]
+                }
+              },
+              "event": [{
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Response time < 500ms', function () {",
+                    "  pm.expect(pm.response.responseTime).to.be.below(500);",
+                    "});"
+                  ]
+                }
+              }]
+            },
+            {
+              "name": "Get notification by ID response time (<300ms)",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{notificationServiceUrl}}/api/v1/notifications/{{notificationId}}",
+                  "host": ["{{notificationServiceUrl}}"],
+                  "path": ["api", "v1","notifications", "{{notificationId}}"]
+                }
+              },
+              "event": [{
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Response time < 300ms', function () {",
+                    "  pm.expect(pm.response.responseTime).to.be.below(300);",
+                    "});"
+                  ]
+                }
+              }]
+            }
+
+          ]
+        }
+      ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "orderServiceUrl",
+      "value": "http://localhost:8081",
+      "type": "string"
+    },
+    {
+      "key": "notificationServiceUrl",
+      "value": "http://localhost:8082",
+      "type": "string"
+    },
+    {
+      "key": "recordId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
