@@ -261,8 +261,8 @@ For best results, run in this order:
 When running the full collection against a fresh database:
 
 - ✅ Positive Scenarios: **6 passed** (100%)
-- ⚠️ Negative - Validation: **3 passed** (100%)
-- ⚠️ Negative - Not Found: **2 passed** (100%)
+- ✅ Negative - Validation: **3 passed** (100%)
+- ✅ Negative - Not Found: **2 passed** (100%)
 - ✅ Edge Cases: **2 passed** (100%, depends on validation)
 - ✅ Performance: **4 passed** (100%, depends on system)
 
@@ -338,11 +338,11 @@ For issues or questions:
 
 ## Version History
 
-- **v1.0** - Initial release with 25+ test scenarios
+- **v1.0** - Initial release with 17+ test scenarios
     - Positive scenarios (6)
-    - Negative scenarios (12)
-    - Edge cases (4)
-    - Performance tests (2)
+    - Negative scenarios (5)
+    - Edge cases (2)
+    - Performance tests (4)
 
 ---
 

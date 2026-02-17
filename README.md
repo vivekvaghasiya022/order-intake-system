@@ -4,13 +4,18 @@ A distributed microservices system built with Spring Boot, Apache Kafka, and MyS
 
 ## Features
 
-- ✅ Asynchronous Architecture - Loose coupling between Order and Notification services.
-- ✅ Idempotent Consumer - Prevents duplicate notifications using a processed-events tracking table.
-- ✅ Transactional Integrity - Ensures database records are consistent with event publishing.
-- ✅ MySQL Persistence - Single MySQL instance using logical schema separation for streamlined infrastructure management.
-- ✅ Database Version Control – Integrated with Flyway to handle automated schema migrations, ensuring consistent table structures across environments.
-- ✅ Kafka Integration - Reliable message brokering using KRaft mode.
-- ✅ Dockerized Environment - Full system setup with a single command.
+- ✅ Create orders with customer email, product code, and quantity
+- ✅ Outbox Pattern to store Order and Event in the same transaction
+- ✅ Guaranteed Event Publishing using background outbox processor
+- ✅ Idempotent Consumer – Prevention of duplicate event processing
+- ✅ Retrieve order/notification by ID
+- ✅ Retrieve all orders/notifications
+- ✅ MySQL database
+- ✅ Flyway database migrations
+- ✅ Kafka event-driven communication (KRaft mode)
+- ✅ Comprehensive global exception handling
+- ✅ Docker support with Docker Compose
+- ✅ RESTful API design
 
 ## Technology Stack
 
