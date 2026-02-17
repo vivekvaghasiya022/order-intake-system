@@ -43,6 +43,7 @@ class NotificationControllerTest {
         Notification notification = new Notification(
                  1L,
                 1L,
+                "test@mail.com",
                 NotificationTypeEnum.ORDER_CREATED,
                 true,
                 "Email sent",

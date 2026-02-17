@@ -24,6 +24,9 @@ public class Notification {
     @Column(name = "order_id")
     private Long orderId;
 
+    @Column(name = "email")
+    private String email;
+
     @Column(name = "type")
     @Builder.Default
     @Enumerated(EnumType.STRING)

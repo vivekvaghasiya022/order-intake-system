@@ -278,30 +278,33 @@ curl http://localhost:8082/api/v1/notifications
     "content": [
       {
         "id": 1,
-        "orderId": 2,
+        "orderId": 1,
+        "email": "test@example.com",
         "type": "ORDER_CREATED",
         "delivered": true,
         "message": "SMS sent successfully",
-        "createdAt": "2026-02-17T07:15:00.438246Z",
-        "eventId": "81aafc46-cf37-47e3-be61-5e0cd07640b2"
+        "createdAt": "2026-02-17T09:27:18.437503Z",
+        "eventId": "f0657243-3d94-4368-8c1c-af448caef434"
       },
       {
         "id": 2,
-        "orderId": 2,
+        "orderId": 1,
+        "email": "test@example.com",
         "type": "ORDER_CREATED",
         "delivered": true,
         "message": "EMAIL sent successfully",
-        "createdAt": "2026-02-17T07:15:00.498126Z",
-        "eventId": "81aafc46-cf37-47e3-be61-5e0cd07640b2"
+        "createdAt": "2026-02-17T09:27:18.485419Z",
+        "eventId": "f0657243-3d94-4368-8c1c-af448caef434"
       },
       {
         "id": 3,
-        "orderId": 2,
+        "orderId": 1,
+        "email": "test@example.com",
         "type": "ORDER_CREATED",
         "delivered": true,
         "message": "FCM sent successfully",
-        "createdAt": "2026-02-17T07:15:00.504750Z",
-        "eventId": "81aafc46-cf37-47e3-be61-5e0cd07640b2"
+        "createdAt": "2026-02-17T09:27:18.491356Z",
+        "eventId": "f0657243-3d94-4368-8c1c-af448caef434"
       }
     ],
     "pageNumber": 0,
@@ -309,7 +312,7 @@ curl http://localhost:8082/api/v1/notifications
     "totalElements": 3,
     "totalPages": 1
   },
-  "timestamp": "2026-02-17T07:20:21.502Z"
+  "timestamp": "2026-02-17T09:30:15.591Z"
 }
 ```
 
@@ -330,14 +333,15 @@ curl http://localhost:8082/api/v1/notifications/1
   "message": "Notification fetched successfully with id: 1",
   "data": {
     "id": 1,
-    "orderId": 2,
+    "orderId": 1,
+    "email": "test@example.com",
     "type": "ORDER_CREATED",
     "delivered": true,
     "message": "SMS sent successfully",
-    "createdAt": "2026-02-17T07:15:00.438246Z",
-    "eventId": "81aafc46-cf37-47e3-be61-5e0cd07640b2"
+    "createdAt": "2026-02-17T09:27:18.437503Z",
+    "eventId": "f0657243-3d94-4368-8c1c-af448caef434"
   },
-  "timestamp": "2026-02-17T07:21:15.869Z"
+  "timestamp": "2026-02-17T09:30:51.346Z"
 }
 ```
 
@@ -347,7 +351,7 @@ curl http://localhost:8082/api/v1/notifications/1
 Retrieve all notifications for a specific order by its ID.
 
 ```bash
-curl http://localhost:8082/api/v1/notifications?orderId=2
+curl http://localhost:8082/api/v1/notifications?orderId=1
 ```
 
 ### Expected Response (200 OK) - With Data
@@ -355,37 +359,40 @@ curl http://localhost:8082/api/v1/notifications?orderId=2
 ```json
 {
   "status": "SUCCESS",
-  "message": "Notifications fetched successfully for orderId: 2",
+  "message": "Notifications fetched successfully for orderId: 1",
   "data": [
     {
       "id": 1,
-      "orderId": 2,
+      "orderId": 1,
+      "email": "test@example.com",
       "type": "ORDER_CREATED",
       "delivered": true,
       "message": "SMS sent successfully",
-      "createdAt": "2026-02-17T07:15:00.438246Z",
-      "eventId": "81aafc46-cf37-47e3-be61-5e0cd07640b2"
+      "createdAt": "2026-02-17T09:27:18.437503Z",
+      "eventId": "f0657243-3d94-4368-8c1c-af448caef434"
     },
     {
       "id": 2,
-      "orderId": 2,
+      "orderId": 1,
+      "email": "test@example.com",
       "type": "ORDER_CREATED",
       "delivered": true,
       "message": "EMAIL sent successfully",
-      "createdAt": "2026-02-17T07:15:00.498126Z",
-      "eventId": "81aafc46-cf37-47e3-be61-5e0cd07640b2"
+      "createdAt": "2026-02-17T09:27:18.485419Z",
+      "eventId": "f0657243-3d94-4368-8c1c-af448caef434"
     },
     {
       "id": 3,
-      "orderId": 2,
+      "orderId": 1,
+      "email": "test@example.com",
       "type": "ORDER_CREATED",
       "delivered": true,
       "message": "FCM sent successfully",
-      "createdAt": "2026-02-17T07:15:00.504750Z",
-      "eventId": "81aafc46-cf37-47e3-be61-5e0cd07640b2"
+      "createdAt": "2026-02-17T09:27:18.491356Z",
+      "eventId": "f0657243-3d94-4368-8c1c-af448caef434"
     }
   ],
-  "timestamp": "2026-02-17T07:22:05.900Z"
+  "timestamp": "2026-02-17T09:31:48.209Z"
 }
 ```
 
@@ -440,6 +447,7 @@ Expected output: Notification record for that order.
     {
       "id": 4,
       "orderId": 3,
+      "email": "test@example.com",
       "type": "ORDER_CREATED",
       "delivered": true,
       "message": "SMS sent successfully",
@@ -449,6 +457,7 @@ Expected output: Notification record for that order.
     {
       "id": 5,
       "orderId": 3,
+      "email": "test@example.com",
       "type": "ORDER_CREATED",
       "delivered": true,
       "message": "EMAIL sent successfully",
@@ -458,6 +467,7 @@ Expected output: Notification record for that order.
     {
       "id": 6,
       "orderId": 3,
+      "email": "test@example.com",
       "type": "ORDER_CREATED",
       "delivered": true,
       "message": "FCM sent successfully",

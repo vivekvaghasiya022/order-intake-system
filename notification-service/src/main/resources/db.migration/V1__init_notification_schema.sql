@@ -3,6 +3,7 @@
 CREATE TABLE IF NOT EXISTS notifications (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     order_id BIGINT NOT NULL,
+    email VARCHAR(255) NOT NULL,
     type BIGINT NOT NULL,
     delivered BOOLEAN NOT NULL,
     message VARCHAR(500) NULL,

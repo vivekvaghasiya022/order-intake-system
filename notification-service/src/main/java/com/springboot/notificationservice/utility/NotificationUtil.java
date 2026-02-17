@@ -17,6 +17,7 @@ public class NotificationUtil {
         return Notification.builder()
                 .eventId(event.eventId())
                 .orderId(event.orderId())
+                .email(event.customerEmail())
                 .type(notificationType)
                 .delivered(processed)
                 .message(message)
