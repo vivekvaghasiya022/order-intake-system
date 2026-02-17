@@ -262,7 +262,7 @@ When running the full collection against a fresh database:
 - ✅ Positive Scenarios: **6 passed** (100%)
 - ⚠️ Negative - Validation: **3 passed** (100%)
 - ⚠️ Negative - Not Found: **2 passed** (100%)
-- ✅ Edge Cases: **1-2 passed** (50-100%, depends on validation)
+- ✅ Edge Cases: **2 passed** (100%, depends on validation)
 - ✅ Performance: **4 passed** (100%, depends on system)
 
 **Total**: ~16-17 tests passed

@@ -1,7 +1,5 @@
 package com.springboot.orderservice.dto.event;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.time.Instant;
 
 public record OrderCreated(

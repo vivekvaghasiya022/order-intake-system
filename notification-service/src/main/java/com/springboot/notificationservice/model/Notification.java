@@ -26,6 +26,7 @@ public class Notification {
 
     @Column(name = "type")
     @Builder.Default
+    @Enumerated(EnumType.STRING)
     private NotificationTypeEnum type = NotificationTypeEnum.ORDER_CREATED;
 
     @Column(name = "delivered")

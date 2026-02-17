@@ -92,9 +92,9 @@ When running against a fresh database:
 | Positive Scenarios | 100% (6/6)         |
 | Validation Errors | 100% (3/3)         |
 | Not Found Errors | 100% (2/2)         |
-| Edge Cases | 50% (1/2)          |
+| Edge Cases | 100% (2/2)         |
 | Performance Tests | 100% (4/4)         |
-| **Overall** | **~94%**           |
+| **Overall** | **100%**           |
 
 ## 🎨 Features
 

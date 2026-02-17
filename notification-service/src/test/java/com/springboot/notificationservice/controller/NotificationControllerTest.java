@@ -1,12 +1,13 @@
 package com.springboot.notificationservice.controller;
 
-import com.springboot.notificationservice.dto.NotificationResponse;
 import com.springboot.notificationservice.dto.NotificationTypeEnum;
 import com.springboot.notificationservice.exception.NotificationNotFoundException;
+import com.springboot.notificationservice.model.Notification;
 import com.springboot.notificationservice.service.NotificationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.Page;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -14,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
-import java.util.List;
 
 import static org.mockito.Mockito.when;
 
@@ -30,8 +30,8 @@ class NotificationControllerTest {
     @Test
     void shouldReturnAllNotifications() throws Exception {
 
-        when(notificationService.getAll())
-                .thenReturn(List.of());
+        when(notificationService.getAllNotifications(0, 10))
+                .thenReturn(Page.empty());
 
         mockMvc.perform(get("/api/v1/notifications"))
                 .andExpect(status().isOk());
@@ -40,7 +40,7 @@ class NotificationControllerTest {
     @Test
     void shouldReturnNotificationById() throws Exception {
 
-        NotificationResponse notification = new NotificationResponse(
+        Notification notification = new Notification(
                  1L,
                 1L,
                 NotificationTypeEnum.ORDER_CREATED,
@@ -50,18 +50,18 @@ class NotificationControllerTest {
                 "event-123"
         );
 
-        when(notificationService.getById(1L))
+        when(notificationService.getNotificationById(1L))
                 .thenReturn(notification);
 
         mockMvc.perform(get("/api/v1/notifications/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.data.id").value(1));
     }
 
     @Test
     void shouldReturn404_whenNotificationNotFound() throws Exception {
 
-        when(notificationService.getById(1L))
+        when(notificationService.getNotificationById(1L))
                 .thenThrow(new NotificationNotFoundException(1L));
 
         mockMvc.perform(get("/api/v1/notifications/1"))

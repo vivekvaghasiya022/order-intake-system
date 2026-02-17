@@ -1,14 +1,14 @@
 package com.springboot.orderservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.orderservice.dto.EventStatusEnum;
 import com.springboot.orderservice.dto.OrderRequest;
-import com.springboot.orderservice.dto.OrderResponse;
 import com.springboot.orderservice.dto.OrderStatusEnum;
 import com.springboot.orderservice.dto.event.OrderCreated;
 import com.springboot.orderservice.exception.OrderNotFoundException;
 import com.springboot.orderservice.mapper.OrderMapper;
 import com.springboot.orderservice.model.Order;
-//import com.springboot.orderservice.producer.OrderEventPublisher;
 import com.springboot.orderservice.model.OutboxEvent;
 import com.springboot.orderservice.repository.OrderRepository;
 import com.springboot.orderservice.repository.OutboxRepository;
@@ -18,11 +18,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -39,12 +43,14 @@ class OrderServiceTest {
     @Mock
     private OrderMapper orderMapper;
 
+    @Mock
+    private ObjectMapper objectMapper;
+
     @InjectMocks
     private OrderService orderService;
 
     private Order order;
     private OrderRequest requestDto;
-    private OrderResponse responseDto;
     private OrderCreated orderCreatedEvent;
     private OutboxEvent outboxEvent;
 
@@ -60,15 +66,6 @@ class OrderServiceTest {
                 .status(OrderStatusEnum.CREATED)
                 .createdAt(Instant.now())
                 .build();
-
-        responseDto = new OrderResponse(
-                1L,
-                "test@mail.com",
-                "P100",
-                2,
-                OrderStatusEnum.CREATED,
-                order.getCreatedAt()
-        );
 
         orderCreatedEvent = new OrderCreated(
                 "event-123",
@@ -88,42 +85,49 @@ class OrderServiceTest {
     }
 
     @Test
-    void createOrder_shouldPersist() {
+    void createOrder_shouldPersist() throws JsonProcessingException {
         when(orderMapper.toEntity(requestDto)).thenReturn(order);
         when(orderRepository.save(any())).thenReturn(order);
-        when(orderMapper.toResponse(order)).thenReturn(responseDto);
 
         when(orderMapper.toEvent(order)).thenReturn(orderCreatedEvent);
         when(outboxRepository.save(any())).thenReturn(outboxEvent);
+        when(objectMapper.writeValueAsString(orderCreatedEvent)).thenReturn("{}");
 
-        OrderResponse result = orderService.createOrder(requestDto);
+        Order result = orderService.createOrder(requestDto);
 
         assertNotNull(result);
-        assertEquals(1L, result.id());
+        assertEquals(1L, result.getId());
 
         verify(orderRepository).save(any());
         verify(outboxRepository).save(any());
     }
 
     @Test
-    void getAllOrders_shouldReturnList() {
-        when(orderRepository.findAll()).thenReturn(List.of(order));
-        when(orderMapper.toResponse(order)).thenReturn(responseDto);
+    void getAllOrders_shouldReturnPaginatedList() {
+        int page = 0;
+        int size = 10;
 
-        List<OrderResponse> result = orderService.getAllOrders();
+        List<Order> orders = List.of(order);
+        Page<Order> orderPage = new PageImpl<>(orders);
 
-        assertEquals(1, result.size());
-        verify(orderRepository).findAll();
+        when(orderRepository.findAll(any(Pageable.class))).thenReturn(orderPage);
+
+        Page<Order> result = orderService.getAllOrders(page, size);
+
+        assertNotNull(result);
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getTotalElements()).isEqualTo(1);
+
+        verify(orderRepository).findAll(any(Pageable.class));
     }
 
     @Test
     void getOrderById_whenExists_shouldReturnOrder() {
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-        when(orderMapper.toResponse(order)).thenReturn(responseDto);
 
-        OrderResponse result = orderService.getOrderById(1L);
+        Order result = orderService.getOrderById(1L);
 
-        assertEquals(1L, result.id());
+        assertEquals(1L, result.getId());
     }
 
     @Test

@@ -1,20 +1,20 @@
 package com.springboot.orderservice.controller;
 
 import com.springboot.orderservice.dto.OrderRequest;
-import com.springboot.orderservice.dto.OrderResponse;
 import com.springboot.orderservice.dto.OrderStatusEnum;
 import com.springboot.orderservice.exception.OrderNotFoundException;
+import com.springboot.orderservice.model.Order;
 import com.springboot.orderservice.service.OrderService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -38,7 +38,7 @@ class OrderControllerTest {
     void createOrder_validRequest_shouldReturn201() throws Exception {
 
         OrderRequest request = new OrderRequest("test@mail.com", "P100", 2);
-        OrderResponse response = new OrderResponse(
+        Order response = new Order(
                 1L, "test@mail.com", "P100", 2,
                 OrderStatusEnum.CREATED, Instant.now()
         );
@@ -65,7 +65,7 @@ class OrderControllerTest {
     @Test
     void getAllOrders_shouldReturn200() throws Exception {
 
-        when(orderService.getAllOrders()).thenReturn(List.of());
+        when(orderService.getAllOrders(0 , 10)).thenReturn(Page.empty());
 
         mockMvc.perform(get("/api/v1/orders"))
                 .andExpect(status().isOk());
@@ -74,7 +74,7 @@ class OrderControllerTest {
     @Test
     void getOrderById_whenExists_shouldReturn200() throws Exception {
 
-        OrderResponse response = new OrderResponse(
+        Order response = new Order(
                 1L, "test@mail.com", "P100", 2,
                 OrderStatusEnum.CREATED, Instant.now()
         );

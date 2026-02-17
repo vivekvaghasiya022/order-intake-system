@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.orderservice.dto.EventStatusEnum;
 import com.springboot.orderservice.dto.OrderRequest;
-import com.springboot.orderservice.dto.OrderResponse;
 import com.springboot.orderservice.dto.event.OrderCreated;
 import com.springboot.orderservice.exception.OrderNotFoundException;
 import com.springboot.orderservice.mapper.OrderMapper;
@@ -14,9 +13,11 @@ import com.springboot.orderservice.repository.OrderRepository;
 import com.springboot.orderservice.repository.OutboxRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class OrderService {
     private final ObjectMapper objectMapper;
 
     @Transactional
-    public OrderResponse createOrder(OrderRequest request) {
+    public Order createOrder(OrderRequest request) {
         log.info("Creating order for: {}", request.getProductCode());
 
         // Mapping request dto to order entity
@@ -60,23 +61,20 @@ public class OrderService {
         }
 
         log.info("Order created successfully with id: {}", savedOrder.getId());
-        return orderMapper.toResponse(savedOrder);
+        return savedOrder;
     }
 
     @Transactional(readOnly = true)
-    public List<OrderResponse> getAllOrders() {
-        log.info("Fetching all orders");
-        return orderRepository.findAll()
-                .stream()
-                .map(orderMapper::toResponse)
-                .toList();
+    public Page<Order> getAllOrders(int page, int size) {
+        log.info("Fetching orders - Page: {}, Size: {}", page, size);
+        Pageable pageable = PageRequest.of(page, size);
+        return orderRepository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)
-    public OrderResponse getOrderById(Long id) {
+    public Order getOrderById(Long id) {
         log.info("Fetching order with id: {}", id);
         return orderRepository.findById(id)
-                .map(orderMapper::toResponse)
                 .orElseThrow(() -> new OrderNotFoundException(id));
     }
 }

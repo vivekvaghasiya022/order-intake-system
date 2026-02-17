@@ -1,11 +1,14 @@
 package com.springboot.orderservice.controller;
 
+import com.springboot.orderservice.dto.ApiResponse;
 import com.springboot.orderservice.dto.OrderRequest;
-import com.springboot.orderservice.dto.OrderResponse;
+import com.springboot.orderservice.dto.PagedResponse;
+import com.springboot.orderservice.model.Order;
 import com.springboot.orderservice.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,24 +24,45 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(
+    public ResponseEntity<ApiResponse<Order>> createOrder(
             @Valid @RequestBody OrderRequest request) {
         log.info("POST /api/orders - Creating order");
-        OrderResponse response = orderService.createOrder(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        Order response = orderService.createOrder(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ApiResponse.success("Order created successfully", response)
+        );
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderResponse>> getAllOrders() {
+    public ResponseEntity<ApiResponse<PagedResponse<Order>>> getAllOrders(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
         log.info("GET /api/orders - Fetching all orders");
-        List<OrderResponse> orders = orderService.getAllOrders();
-        return ResponseEntity.ok(orders);
+
+        Page<Order> orderPage = orderService.getAllOrders(page, size);
+
+        List<Order> content = orderPage.getContent();
+
+        PagedResponse<Order> pagedResponse = PagedResponse.<Order>builder()
+                .content(content)
+                .pageNumber(orderPage.getNumber())
+                .pageSize(orderPage.getSize())
+                .totalElements(orderPage.getTotalElements())
+                .totalPages(orderPage.getTotalPages())
+                .build();
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Orders fetched successfully", pagedResponse)
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Order>> getOrderById(@PathVariable Long id) {
         log.info("GET /api/orders/{} - Fetching order", id);
-        OrderResponse response = orderService.getOrderById(id);
-        return ResponseEntity.ok(response);
+        Order response = orderService.getOrderById(id);
+        return ResponseEntity.ok(
+                ApiResponse.success("Order fetched successfully for id: "+ id, response)
+        );
     }
 }

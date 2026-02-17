@@ -1,15 +1,16 @@
 package com.springboot.notificationservice.service;
 
-import com.springboot.notificationservice.dto.NotificationResponse;
 import com.springboot.notificationservice.dto.NotificationTypeEnum;
 import com.springboot.notificationservice.dto.event.OrderCreated;
 import com.springboot.notificationservice.exception.NotificationNotFoundException;
-import com.springboot.notificationservice.mapper.NotificationMapper;
 import com.springboot.notificationservice.model.Notification;
 import com.springboot.notificationservice.repository.NotificationRepository;
 import com.springboot.notificationservice.utility.NotificationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,6 @@ import java.util.List;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-    private final NotificationMapper mapper;
 
     @Transactional
     public void processOrderCreated(OrderCreated event) {
@@ -39,7 +39,7 @@ public class NotificationService {
             try {
                 // Simulate sending notification
                 log.info("Sending {} notification for eventId: {}", type, event.eventId());
-                // Here you would integrate with actual notification services
+                // Here we can integrate with actual notification services
                 // (e.g., Twilio for SMS, SendGrid for Email, Firebase for FCM)
 
                 notification = NotificationUtil.prepareNotification(event, true,
@@ -50,7 +50,7 @@ public class NotificationService {
                 log.error("Failed to send {} notification for eventId: {}, error: {}",
                         type, event.eventId(), e.getMessage());
 
-                // Optionally, you can create a failed notification record here
+                // Creating a failed notification record
                 notification = NotificationUtil.prepareNotification(event, false,
                         type + " failed to send: " + e.getMessage(),
                         NotificationTypeEnum.ORDER_CREATED);
@@ -62,29 +62,25 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public List<NotificationResponse> getAll() {
-        log.info("Fetching all notifications");
-        return notificationRepository.findAll()
-                .stream()
-                .map(mapper::toResponse)
-                .toList();
+    public Page<Notification> getAllNotifications(int page, int size) {
+        log.info("Fetching notifications - Page: {}, Size: {}", page, size);
+        Pageable pageable = PageRequest.of(page, size);
+        return notificationRepository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)
-    public NotificationResponse getById(Long id) {
+    public Notification getNotificationById(Long id) {
         log.info("Fetching notification with id: {}", id);
         return notificationRepository.findById(id)
-                .map(mapper::toResponse)
                 .orElseThrow(() -> new NotificationNotFoundException(id));
     }
 
     @Transactional(readOnly = true)
-    public List<NotificationResponse> getByOrderId(Long orderId) {
+    public List<Notification> getNotificationByOrderId(Long orderId) {
         log.info("Fetching notification with orderId: {}", orderId);
         return notificationRepository.findByOrderId(orderId)
                 .filter(list -> !list.isEmpty())
                 .map(list -> list.stream()
-                        .map(mapper::toResponse)
                         .toList())
                 .orElseThrow(() -> new NotificationNotFoundException(orderId));
     }

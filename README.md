@@ -156,10 +156,15 @@ Instead of publishing directly to Kafka inside the service transaction, this sys
    - No order is created
    - No event is stored
 #### 3. A background publisher component:
-   - Polls `outbox_events`
+   - Polls up to 50 events from `outbox_events` with status `PENDING` (using `SELECT ... FOR UPDATE SKIP LOCKED`)
+   - Rows are pessimistically locked inside a transaction, ensuring:
+     - Multiple publisher instances can run concurrently
+     - Already locked rows are skipped
+     - No event is processed twice
    - Publishes events to Kafka
-   - Marks event as `PROCESSED`
-   - If publishing fails
+   - If publishing succeeds → marks event as `PROCESSED`
+   - If publishing fails event will be retried for a configurable number of attempts
+   - If all attempts fail, event is marked as `FAILED` and error details are logged
 
 
 ### 2️⃣ Consumer Error Handling
