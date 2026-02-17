@@ -43,12 +43,17 @@ curl -X POST http://localhost:8081/api/v1/orders \
 
 ```json
 {
-  "id": 1,
-  "customerEmail": "test@gmail.com",
-  "productCode": "PR01",
-  "quantity": 10,
-  "status": "CREATED",
-  "createdAt": "2026-02-14T17:18:36.815914Z"
+  "status": "SUCCESS",
+  "message": "Order created successfully",
+  "data": {
+    "id": 2,
+    "customerEmail": "test@gmail.com",
+    "productCode": "PR01",
+    "quantity": 10,
+    "status": "CREATED",
+    "createdAt": "2026-02-17T07:14:55.878088Z"
+  },
+  "timestamp": "2026-02-17T07:14:56.508Z"
 }
 ```
 
@@ -73,13 +78,13 @@ curl -X POST http://localhost:8081/api/v1/orders \
 
 ```json
 {
-  "path": "/api/v1/orders",
-  "error": "Validation Failed",
-  "errors": {
-    "quantity": "Quantity should be positive"
-  },
-  "status": 400,
-  "timestamp": "2026-02-16T05:54:17.729761914Z"
+  "status": "FAILURE",
+  "message": "Validation failed",
+  "code": "VALIDATION_ERROR",
+  "errors": [
+    "quantity : Quantity should be positive"
+  ],
+  "timestamp": "2026-02-17T07:15:17.471Z"
 }
 ```
 
@@ -103,13 +108,13 @@ curl -X POST http://localhost:8081/api/v1/orders \
 
 ```json
 {
-  "path": "/api/v1/orders",
-  "error": "Validation Failed",
-  "errors": {
-    "customerEmail": "Invalid email format"
-  },
-  "status": 400,
-  "timestamp": "2026-02-16T05:53:06.970712135Z"
+  "status": "FAILURE",
+  "message": "Validation failed",
+  "code": "VALIDATION_ERROR",
+  "errors": [
+    "customerEmail : Invalid email format"
+  ],
+  "timestamp": "2026-02-17T07:15:43.476Z"
 }
 ```
 
@@ -132,13 +137,13 @@ curl -X POST http://localhost:8081/api/v1/orders \
 
 ```json
 {
-  "path": "/api/v1/orders",
-  "error": "Validation Failed",
-  "errors": {
-    "productCode": "Product code is required"
-  },
-  "status": 400,
-  "timestamp": "2026-02-16T05:53:35.358567593Z"
+  "status": "FAILURE",
+  "message": "Validation failed",
+  "code": "VALIDATION_ERROR",
+  "errors": [
+    "productCode : Product code is required"
+  ],
+  "timestamp": "2026-02-17T07:16:19.220Z"
 }
 ```
 
@@ -153,22 +158,52 @@ curl http://localhost:8081/api/v1/orders
 ### Expected Response (200 OK) - With Data
 
 ```json
-[
-    {
+{
+  "status": "SUCCESS",
+  "message": "Orders fetched successfully",
+  "data": {
+    "content": [
+      {
         "id": 1,
+        "customerEmail": "test121@gmail.com",
+        "productCode": "PR001",
+        "quantity": 10,
+        "status": "CREATED",
+        "createdAt": "2026-02-17T07:03:08.013163Z"
+      },
+      {
+        "id": 2,
         "customerEmail": "test@gmail.com",
         "productCode": "PR01",
         "quantity": 10,
         "status": "CREATED",
-        "createdAt": "2026-02-14T17:18:36.815914Z"
-    }
-]
+        "createdAt": "2026-02-17T07:14:55.878088Z"
+      }
+    ],
+    "pageNumber": 0,
+    "pageSize": 10,
+    "totalElements": 2,
+    "totalPages": 1
+  },
+  "timestamp": "2026-02-17T07:16:59.420Z"
+}
 ```
 
 ### Expected Response (200 OK) - Empty Database
 
 ```json
-[]
+{
+  "status": "SUCCESS",
+  "message": "Orders fetched successfully",
+  "data": {
+    "content": [],
+    "pageNumber": 0,
+    "pageSize": 10,
+    "totalElements": 0,
+    "totalPages": 0
+  },
+  "timestamp": "2026-02-17T07:18:06.791Z"
+}
 ```
 
 ### Notes
@@ -180,19 +215,24 @@ curl http://localhost:8081/api/v1/orders
 Retrieve a specific order by its ID.
 
 ```bash
-curl http://localhost:8081/api/v1/orders/1
+curl http://localhost:8081/api/v1/orders/3
 ```
 
 ### Expected Response (200 OK) - With Data
 
 ```json
 {
-  "id": 1,
-  "customerEmail": "test@gmail.com",
-  "productCode": "PR01",
-  "quantity": 10,
-  "status": "CREATED",
-  "createdAt": "2026-02-14T17:18:36.815914Z"
+  "status": "SUCCESS",
+  "message": "Order fetched successfully for id: 3",
+  "data": {
+    "id": 3,
+    "customerEmail": "test@gmail.com",
+    "productCode": "PR01",
+    "quantity": 10,
+    "status": "CREATED",
+    "createdAt": "2026-02-17T07:18:57.416050Z"
+  },
+  "timestamp": "2026-02-17T07:19:30.302Z"
 }
 ```
 
@@ -208,11 +248,13 @@ curl http://localhost:8081/api/v1/orders/999
 
 ```json
 {
-  "timestamp": "2026-02-14T17:41:39.854792683",
-  "status": 404,
-  "error": "Not Found",
-  "message": "Order not found with id: 999",
-  "path": "/api/v1/orders/999"
+  "status": "FAILURE",
+  "message": "Order not found",
+  "code": "ORDER_NOT_FOUND",
+  "errors": [
+    "Order not found with id: 999"
+  ],
+  "timestamp": "2026-02-17T07:19:55.064Z"
 }
 ```
 
@@ -229,35 +271,46 @@ curl http://localhost:8082/api/v1/notifications
 ### Expected Response (200 OK) - With Data
 
 ```json
-[
-  {
-    "id": 1,
-    "orderId": 1,
-    "type": "ORDER_CREATED",
-    "delivered": true,
-    "message": "SMS sent successfully",
-    "createdAt": "2026-02-14T17:18:38.809529Z",
-    "eventId": "66676086-29f9-460a-83cd-7bfa06733368"
+{
+  "status": "SUCCESS",
+  "message": "Notifications fetched successfully",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "orderId": 2,
+        "type": "ORDER_CREATED",
+        "delivered": true,
+        "message": "SMS sent successfully",
+        "createdAt": "2026-02-17T07:15:00.438246Z",
+        "eventId": "81aafc46-cf37-47e3-be61-5e0cd07640b2"
+      },
+      {
+        "id": 2,
+        "orderId": 2,
+        "type": "ORDER_CREATED",
+        "delivered": true,
+        "message": "EMAIL sent successfully",
+        "createdAt": "2026-02-17T07:15:00.498126Z",
+        "eventId": "81aafc46-cf37-47e3-be61-5e0cd07640b2"
+      },
+      {
+        "id": 3,
+        "orderId": 2,
+        "type": "ORDER_CREATED",
+        "delivered": true,
+        "message": "FCM sent successfully",
+        "createdAt": "2026-02-17T07:15:00.504750Z",
+        "eventId": "81aafc46-cf37-47e3-be61-5e0cd07640b2"
+      }
+    ],
+    "pageNumber": 0,
+    "pageSize": 10,
+    "totalElements": 3,
+    "totalPages": 1
   },
-  {
-    "id": 2,
-    "orderId": 1,
-    "type": "ORDER_CREATED",
-    "delivered": true,
-    "message": "EMAIL sent successfully",
-    "createdAt": "2026-02-14T17:18:38.856165Z",
-    "eventId": "66676086-29f9-460a-83cd-7bfa06733368"
-  },
-  {
-    "id": 3,
-    "orderId": 1,
-    "type": "ORDER_CREATED",
-    "delivered": true,
-    "message": "FCM sent successfully",
-    "createdAt": "2026-02-14T17:18:38.861739Z",
-    "eventId": "66676086-29f9-460a-83cd-7bfa06733368"
-  }
-]
+  "timestamp": "2026-02-17T07:20:21.502Z"
+}
 ```
 
 
@@ -273,13 +326,18 @@ curl http://localhost:8082/api/v1/notifications/1
 
 ```json
 {
-  "id": 1,
-  "orderId": 1,
-  "type": "ORDER_CREATED",
-  "delivered": true,
-  "message": "SMS sent successfully",
-  "createdAt": "2026-02-14T17:18:38.809529Z",
-  "eventId": "66676086-29f9-460a-83cd-7bfa06733368"
+  "status": "SUCCESS",
+  "message": "Notification fetched successfully with id: 1",
+  "data": {
+    "id": 1,
+    "orderId": 2,
+    "type": "ORDER_CREATED",
+    "delivered": true,
+    "message": "SMS sent successfully",
+    "createdAt": "2026-02-17T07:15:00.438246Z",
+    "eventId": "81aafc46-cf37-47e3-be61-5e0cd07640b2"
+  },
+  "timestamp": "2026-02-17T07:21:15.869Z"
 }
 ```
 
@@ -289,41 +347,46 @@ curl http://localhost:8082/api/v1/notifications/1
 Retrieve all notifications for a specific order by its ID.
 
 ```bash
-curl http://localhost:8082/api/v1/notifications?orderId=1
+curl http://localhost:8082/api/v1/notifications?orderId=2
 ```
 
 ### Expected Response (200 OK) - With Data
 
 ```json
-[
-  {
-    "id": 1,
-    "orderId": 1,
-    "type": "ORDER_CREATED",
-    "delivered": true,
-    "message": "SMS sent successfully",
-    "createdAt": "2026-02-14T18:01:40.768219Z",
-    "eventId": "cfdd63c6-010a-4ff7-b283-fa21bc163cf6"
-  },
-  {
-    "id": 2,
-    "orderId": 1,
-    "type": "ORDER_CREATED",
-    "delivered": true,
-    "message": "EMAIL sent successfully",
-    "createdAt": "2026-02-14T18:01:40.803505Z",
-    "eventId": "cfdd63c6-010a-4ff7-b283-fa21bc163cf6"
-  },
-  {
-    "id": 3,
-    "orderId": 1,
-    "type": "ORDER_CREATED",
-    "delivered": true,
-    "message": "FCM sent successfully",
-    "createdAt": "2026-02-14T18:01:40.808776Z",
-    "eventId": "cfdd63c6-010a-4ff7-b283-fa21bc163cf6"
-  }
-]
+{
+  "status": "SUCCESS",
+  "message": "Notifications fetched successfully for orderId: 2",
+  "data": [
+    {
+      "id": 1,
+      "orderId": 2,
+      "type": "ORDER_CREATED",
+      "delivered": true,
+      "message": "SMS sent successfully",
+      "createdAt": "2026-02-17T07:15:00.438246Z",
+      "eventId": "81aafc46-cf37-47e3-be61-5e0cd07640b2"
+    },
+    {
+      "id": 2,
+      "orderId": 2,
+      "type": "ORDER_CREATED",
+      "delivered": true,
+      "message": "EMAIL sent successfully",
+      "createdAt": "2026-02-17T07:15:00.498126Z",
+      "eventId": "81aafc46-cf37-47e3-be61-5e0cd07640b2"
+    },
+    {
+      "id": 3,
+      "orderId": 2,
+      "type": "ORDER_CREATED",
+      "delivered": true,
+      "message": "FCM sent successfully",
+      "createdAt": "2026-02-17T07:15:00.504750Z",
+      "eventId": "81aafc46-cf37-47e3-be61-5e0cd07640b2"
+    }
+  ],
+  "timestamp": "2026-02-17T07:22:05.900Z"
+}
 ```
 
 ## 🚀 Eventing Flow Example
@@ -344,12 +407,17 @@ curl -X POST http://localhost:8081/api/v1/orders \
 
 ```json
 {
-  "id": 1,
-  "customerEmail": "test@gmail.com",
-  "productCode": "PR01",
-  "quantity": 10,
-  "status": "CREATED",
-  "createdAt": "2026-02-14T17:18:36.815914Z"
+  "status": "SUCCESS",
+  "message": "Order created successfully",
+  "data": {
+    "id": 3,
+    "customerEmail": "test@gmail.com",
+    "productCode": "PR01",
+    "quantity": 10,
+    "status": "CREATED",
+    "createdAt": "2026-02-17T07:18:57.416050Z"
+  },
+  "timestamp": "2026-02-17T07:18:57.542Z"
 }
 ```
 
@@ -360,38 +428,43 @@ Kafka will deliver an `OrderCreated` event to the Notification Service.
 ### 3. Verify Notification for the order
 
 ```bash
-curl http://localhost:8082/api/notifications?orderId=1
+curl http://localhost:8082/api/notifications?orderId=3
 ```
 
 Expected output: Notification record for that order.
 ```json
-[
+{
+  "status": "SUCCESS",
+  "message": "Notifications fetched successfully for orderId: 3",
+  "data": [
     {
-        "id": 1,
-        "orderId": 1,
-        "type": "ORDER_CREATED",
-        "delivered": true,
-        "message": "SMS sent successfully",
-        "createdAt": "2026-02-14T18:01:40.768219Z",
-        "eventId": "cfdd63c6-010a-4ff7-b283-fa21bc163cf6"
+      "id": 4,
+      "orderId": 3,
+      "type": "ORDER_CREATED",
+      "delivered": true,
+      "message": "SMS sent successfully",
+      "createdAt": "2026-02-17T07:19:00.686873Z",
+      "eventId": "77325ab8-e5f5-4ff9-89e5-7e215fd28a64"
     },
     {
-        "id": 2,
-        "orderId": 1,
-        "type": "ORDER_CREATED",
-        "delivered": true,
-        "message": "EMAIL sent successfully",
-        "createdAt": "2026-02-14T18:01:40.803505Z",
-        "eventId": "cfdd63c6-010a-4ff7-b283-fa21bc163cf6"
+      "id": 5,
+      "orderId": 3,
+      "type": "ORDER_CREATED",
+      "delivered": true,
+      "message": "EMAIL sent successfully",
+      "createdAt": "2026-02-17T07:19:00.706962Z",
+      "eventId": "77325ab8-e5f5-4ff9-89e5-7e215fd28a64"
     },
     {
-        "id": 3,
-        "orderId": 1,
-        "type": "ORDER_CREATED",
-        "delivered": true,
-        "message": "FCM sent successfully",
-        "createdAt": "2026-02-14T18:01:40.808776Z",
-        "eventId": "cfdd63c6-010a-4ff7-b283-fa21bc163cf6"
+      "id": 6,
+      "orderId": 3,
+      "type": "ORDER_CREATED",
+      "delivered": true,
+      "message": "FCM sent successfully",
+      "createdAt": "2026-02-17T07:19:00.736596Z",
+      "eventId": "77325ab8-e5f5-4ff9-89e5-7e215fd28a64"
     }
-]
+  ],
+  "timestamp": "2026-02-17T07:23:32.000Z"
+}
 ```

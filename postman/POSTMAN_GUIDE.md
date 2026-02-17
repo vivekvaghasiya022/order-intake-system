@@ -65,6 +65,7 @@ After importing:
 │   ├── Get All Orders
 │   ├── Get Order ID - Existing
 │   ├── Get All Notifications
+│   ├── Get Notification by ID - Existing
 │   └── Get Notification by Order ID - Existing
 │
 ├── 📁 Negative Scenarios - Validation Errors (3 requests)
@@ -109,7 +110,7 @@ After importing:
 2. Click **Run** button
 3. Configure run options:
     - Iterations: 1 (or more for load testing)
-    - Delay: 1000ms
+    - Delay: 2000ms (to complete schedule tasks)
     - Data file: None needed
 4. Click **Run Order Intake System API**
 5. View test results
@@ -182,7 +183,7 @@ pm.test("Status code is 201", function () {
 ```javascript
 pm.test("Response has id", function () {
     var jsonData = pm.response.json();
-    pm.expect(jsonData).to.have.property('id');
+    pm.expect(jsonData.data).to.have.property('id');
 });
 ```
 
@@ -190,7 +191,7 @@ pm.test("Response has id", function () {
 ```javascript
 pm.test("Response has correct product code", function () {
     var jsonData = pm.response.json();
-    pm.expect(jsonData.productCode).to.eql("PR1001");
+    pm.expect(jsonData.data.productCode).to.eql("PR1001");
 });
 ```
 
@@ -217,7 +218,7 @@ pm.test("Response time is less than 500ms", function () {
 The collection automatically saves the `orderId` from created records:
 
 ```javascript
-pm.environment.set("orderId", jsonData.id);
+pm.environment.set("orderId", jsonData.data.id);
 ```
 
 This allows subsequent requests to use `{{orderId}}` in the URL.

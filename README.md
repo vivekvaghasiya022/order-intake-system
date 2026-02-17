@@ -277,34 +277,43 @@ curl http://localhost:8081/api/v1/orders/1
 ### Success Response (201 Created)
 ```json
 {
-  "createdAt": "2026-02-13T10:31:43.442153100Z",
-  "customerEmail": "test121@gmail.com",
-  "id": 1,
-  "productCode": "PR001",
-  "quantity": 10,
-  "status": "CREATED"
+  "status": "SUCCESS",
+  "message": "Order created successfully",
+  "data": {
+    "id": 1,
+    "customerEmail": "test121@gmail.com",
+    "productCode": "PR001",
+    "quantity": 10,
+    "status": "CREATED",
+    "createdAt": "2026-02-17T07:03:08.013163Z"
+  },
+  "timestamp": "2026-02-17T07:03:09.192Z"
 }
 ```
 
 ### Error Response (400 Bad Request - Invalid Order)
 ```json
 {
-  "error": "Validation Failed",
-  "message": "Quantity should be positive",
-  "path": "/api/v1/orders",
-  "status": 400,
-  "timestamp": "2026-02-13T15:37:59.6179756"
+  "status": "FAILURE",
+  "message": "Validation failed",
+  "code": "VALIDATION_ERROR",
+  "errors": [
+    "quantity : Quantity should be positive"
+  ],
+  "timestamp": "2026-02-17T07:04:11.632Z"
 }
 ```
 
 ### Error Response (404 Not Found)
 ```json
 {
-  "error": "Not Found",
-  "message": "Order not found with id: a306b0ed-9298-4dff-bdfd-d99eac4b0c70",
-  "path": "/api/v1/orders/a306b0ed-9298-4dff-bdfd-d99eac4b0c70",
-  "status": 404,
-  "timestamp": "2026-02-13T15:40:16.4194449"
+  "status": "FAILURE",
+  "message": "Order not found",
+  "code": "ORDER_NOT_FOUND",
+  "errors": [
+    "Order not found with id: 2"
+  ],
+  "timestamp": "2026-02-17T07:05:12.675Z"
 }
 ```
 
@@ -330,17 +339,21 @@ order-intake-system
 │       │   │       ├── controller
 │       │   │       │   └── OrderController.java
 │       │   │       ├── service
-│       │   │       │   └── OrderService.java
+│       │   │       │   ├── OrderService.java
+│       │   │       │   └── OutboxEventProcessService.java
 │       │   │       ├── repository
 │       │   │       │   ├── OutboxEventRepository.java
 │       │   │       │   └── OrderRepository.java
 │       │   │       ├── model
 │       │   │       │   ├── Order.java
 │       │   │       │   └── OutboxEvent.java
+│       │   │       ├── mapper
+│       │   │       │   └── OrderMapper.java
 │       │   │       ├── dto
 │       │   │       │   ├── event/OrderCreated.java
+│       │   │       │   ├── ApiResponse.java
+│       │   │       │   ├── PagedResponse.java
 │       │   │       │   ├── OrderRequest.java
-│       │   │       │   ├── OrderResponse.java
 │       │   │       │   ├── EventStatusEnum.java
 │       │   │       │   └── OrderStatusEnum.java
 │       │   │       ├── producer
@@ -371,22 +384,22 @@ order-intake-system
 │       │   │       ├── controller
 │       │   │       │   └── NotificationController.java
 │       │   │       ├── service
-│       │   │       │   ├── NotificationService.java
-│       │   │       │   └── impl/NotificationServiceImpl.java
+│       │   │       │   └── NotificationService.java
 │       │   │       ├── repository
 │       │   │       │   └── NotificationRepository.java
 │       │   │       ├── model
 │       │   │       │   └── Notification.java
 │       │   │       ├── dto
 │       │   │       │   ├── event/OrderCreated.java
-│       │   │       │   └── NotificationResponse.java
-│       │   │       ├── mapper
-│       │   │       │   └── NotificationMapper.java
+│       │   │       │   ├── ApiResponse.java
+│       │   │       │   ├── NotificationTypeEnum.java
+│       │   │       │   └── PagedResponse.java
 │       │   │       ├── utility
 │       │   │       │   └── NotificationUtil.java
 │       │   │       ├── listener
 │       │   │       │   └── OrderCreatedListener.java
 │       │   │       └── exception
+│       │   │           ├── NotificationNotFoundException.java
 │       │   │           └── GlobalExceptionHandler.java
 │       │   │
 │       │   └── resources
